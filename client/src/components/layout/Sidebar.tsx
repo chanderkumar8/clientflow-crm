@@ -1,4 +1,4 @@
-
+import LogoutButton from "../auth/LogoutButton"; 
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -91,3 +91,4 @@ export default function Sidebar({
     </>
   );
 }
+<LogoutButton />

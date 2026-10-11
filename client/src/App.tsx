@@ -1,24 +1,33 @@
-
+import Clients from "./pages/Clients";
 import { useState } from "react";
 import {
   BrowserRouter,
   Routes,
   Route,
+  Outlet,
   useLocation,
 } from "react-router-dom";
+
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+
 import Sidebar from "./components/layout/Sidebar";
 import Header from "./components/layout/Header";
 import Dashboard from "./pages/Dashboard";
 
+// Future CRM modules
 const futurePages = [
-  { path: "/clients", title: "Clients" },
-  { path: "/projects", title: "Projects" },
-  { path: "/tasks", title: "Tasks" },
-  { path: "/invoices", title: "Invoices" },
-  { path: "/analytics", title: "Analytics" },
-  { path: "/settings", title: "Settings" },
+  { path: "clients", title: "Clients" },
+  { path: "projects", title: "Projects" },
+  { path: "tasks", title: "Tasks" },
+  { path: "invoices", title: "Invoices" },
+  { path: "analytics", title: "Analytics" },
+  { path: "settings", title: "Settings" },
 ];
 
+// Placeholder pages
 function ComingSoon({ title }: { title: string }) {
   return (
     <div className="mx-auto max-w-5xl p-8">
@@ -26,6 +35,7 @@ function ComingSoon({ title }: { title: string }) {
         <h1 className="text-3xl font-bold text-slate-900">
           {title}
         </h1>
+
         <p className="mt-4 text-slate-500">
           This ClientFlow module is under development.
         </p>
@@ -34,6 +44,7 @@ function ComingSoon({ title }: { title: string }) {
   );
 }
 
+// Dashboard layout
 function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
@@ -46,12 +57,34 @@ function AppLayout() {
       />
 
       <div className="min-h-screen lg:pl-64">
-        <Header onMenuClick={() => setSidebarOpen(true)} />
+        <Header
+          onMenuClick={() => setSidebarOpen(true)}
+        />
 
         <main key={location.pathname}>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
 
+// Main application routes
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+
+        {/* Public authentication pages */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Protected CRM pages */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<AppLayout />}>
+
+            <Route index element={<Dashboard />} />
+<Route path="clients" element={<Clients />} />
             {futurePages.map(({ path, title }) => (
               <Route
                 key={path}
@@ -64,17 +97,11 @@ function AppLayout() {
               path="*"
               element={<ComingSoon title="Page Not Found" />}
             />
-          </Routes>
-        </main>
-      </div>
-    </div>
-  );
-}
 
-export default function App() {
-  return (
-    <BrowserRouter>
-      <AppLayout />
+          </Route>
+        </Route>
+
+      </Routes>
     </BrowserRouter>
   );
 }
